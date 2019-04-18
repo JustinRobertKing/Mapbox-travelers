@@ -3,6 +3,10 @@
 <ul>
 	<% faves.forEach((f) => { %>
 		<li><%= f.name %>, <%= f.state %></li>
+		<form method="POST" action="/remove/?_method=DELETE">
+			<input type="hidden" name="id" value="<%= f.id %>">
+			<input type="submit" value="Remove <%= f.name %> from faves">
+		</form>
 	<% }) %>
 </ul>
 
@@ -14,5 +18,25 @@
 		style: 'mapbox://styles/mapbox/dark-v10',
 		center: [-96, 40.8],
 		zoom: 3
+	})
+	map.on('load', () => {
+		map.addLayer({
+			"id": "points",
+			"type": "symbol",
+			"source": {
+				"type": "geojson",
+				"data": {
+					"type": "FeatureCollection",
+					"features": [<%- markers %>]
+				}
+			},
+			"layout": {
+				"icon-image": "{icon}-15",
+				"text-field": "{title}",
+				"text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+				"text-offset": [0, 0.6],
+				"text-anchor": "top"
+			}
+		})
 	})
 </script>

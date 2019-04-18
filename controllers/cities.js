@@ -53,7 +53,22 @@ router.get('/results', (req, res) => {
 router.get('/cities/faves', (req, res) => {
 	db.city.findAll()
 	.then((faves) => {
-		res.render('cities/faves', { faves, mapkey: mapBoxKey })
+		// TODO create an array of geojson data
+		let markers = faves.map((city) => {
+			let markerObj = {
+				"type": "Feature",
+				"geometry": {
+					"type": "Point",
+					"coordinates": [city.long, city.lat]
+				},
+				"properties": {
+					"title": city.name,
+					"icon": "airport"
+				}
+			}
+			return JSON.stringify(markerObj)
+		})
+		res.render('cities/faves', { faves, mapkey: mapBoxKey, markers })
 	})
 	.catch((error) => {
 		console.log('error', error)
@@ -74,6 +89,17 @@ router.post('/faves', (req, res) => {
 	.catch((error) => {
 		console.log('error', error)
 		res.render('404')
+	})
+})
+
+router.delete('/remove', (req, res) => {
+	db.city.destroy({ where: { id: req.body.id }})
+	.then((deletedPlace) => {
+		console.log(deletedPlace)
+		res.redirect('/cities/faves')
+	})
+	.catch((error) => {
+		console.log('error', error)
 	})
 })
 
