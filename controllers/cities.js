@@ -53,8 +53,7 @@ router.get('/results', (req, res) => {
 router.get('/cities/faves', (req, res) => {
 	db.city.findAll()
 	.then((faves) => {
-		
-		res.render('cities/faves', { faves })
+		res.render('cities/faves', { faves, mapkey: mapBoxKey })
 	})
 	.catch((error) => {
 		console.log('error', error)
